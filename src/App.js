@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import React from 'react';
 import Obat from "./pages/Obat";
-import Stok from "./pages/Stok";
+import Stok from "./pages/StokIn";
 
 function App() {
   return (

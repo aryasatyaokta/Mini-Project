@@ -15,16 +15,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("")
   const [err, setErr] = useState("");
-  
-  // const Login = (e) => {
-  //   e.preventDefault();
-  //   signInWithEmailAndPassword(auth, email, password)
-  //   .then((userCredential) => {
-  //       console.log(userCredential)
-  //   }).catch((error) => {
-  //       console.log(error);
-  //   })
-  // }
+
 
   const handleSubmit = () => {
     if(!name && !email && !password){

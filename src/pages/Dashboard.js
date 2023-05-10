@@ -24,7 +24,6 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     signOut(auth).then(() => {
-      // Sign-out successful.
       naviget("/login")
     }).catch((error) => {
       console.log(error.code)
@@ -36,7 +35,7 @@ export default function Dashboard() {
     if (user) {
       console.log(auth.currentUser)
     } else {
-      naviget("/login")
+      naviget("/")
     }
   });
 

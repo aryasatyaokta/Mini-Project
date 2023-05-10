@@ -9,7 +9,7 @@ import { collection, doc, getDocs} from 'firebase/firestore'
 import {db} from '../config/firebase'
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { updateDoc } from 'firebase/firestore';
+import { updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { Tooltip } from 'react-bootstrap'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import CheckList from '../assets/check.png'
@@ -20,6 +20,7 @@ export default function Pemasukan() {
 
     const auth = getAuth();
     const naviget = useNavigate();
+    
 
     const [showEditStok, setShowEditStok] = useState(false);
 
@@ -30,11 +31,18 @@ export default function Pemasukan() {
     const [obats, setObats] = useState([])
     const collectionRef = collection(db,'obat')
 
+    const [StokIn, setStokIn] = useState([])
+    const collectionRefStokIn = collection(db,'stokIn')
+
+    const [createStokIn, setCreateStokIn] = useState("")
+    const [createNameObat, setCreateNameObat] = useState("")
+    const [createTgl, setCreateTgl] = useState("")
+
     const [updateDataStok, setUpdateDataStok] = useState("")
+    const [updateDataNamaObat, setUpdateDataNamaObat] = useState("")
 
     const [idUpdatedStok, setIdUpdatedStok] = useState("")
 
-  
     const handleLogout = () => {
       signOut(auth).then(() => {
         // Sign-out successful.
@@ -73,16 +81,21 @@ export default function Pemasukan() {
           console.log(err)
       })
     }
-  
-    useEffect( () => {
-      
-      getObats()
-    }, [])
+
+    const getStokIn = async ()  => {
+        await getDocs(collectionRefStokIn).then( (stokIn) =>{
+        let stokInData = stokIn.docs.map((doc) => ({...doc.data(), id: doc.id}))
+        setStokIn(stokInData)
+      }).catch((err) => {
+          console.log(err)
+      })
+    }
 
     const updateStokInOut = async (id) => {
       const obatDocument = doc(db,"obat",id)
       try{
         await updateDoc(obatDocument, {
+          namaObat: updateDataNamaObat,
           stok: updateDataStok
         })
       }catch (err) {
@@ -91,10 +104,42 @@ export default function Pemasukan() {
       getObats()
     }
 
+    const deleteData = async (id) => {
+      if( window.confirm('Apakah data ini ingin di hapus?')) {
+        try{
+          const documentRef = doc(db, "obat", id)
+          await deleteDoc(documentRef)
+        } catch (err) {
+          console.log(err)
+        }
+        getObats()
+      }
+    }
+
+    const submitStokIn = async (e) => {
+      e.preventDefault();
+      try{
+        await addDoc(collectionRefStokIn, {
+          nameObat: createNameObat,
+          stokin: createStokIn,
+          tgl: createTgl
+        })
+        handleEditCloseStok()
+      } catch (err) {
+        console.log(err)
+      }
+      getStokIn()
+      
+    }
+
     const [searchObat, setSearchObat] = useState('');
     const handleSearch = (e) => {
         setSearchObat(e.target.value);
       };
+    useEffect( () => {
+      getStokIn()
+      getObats()
+    }, [])
   return (
     <>
         <div className='d-flex' id='wrapper'>
@@ -162,19 +207,18 @@ export default function Pemasukan() {
                   onChange={handleSearch}
                 />
                 <div className="row my-5">
-                    {/* <div className=""> */}
                       {obats.filter((obats) =>
                       obats.namaObat.toLowerCase().includes(searchObat.toLowerCase())
                       ).map(({id, namaObat, sediaan, stok}) =>
                       <Card onClick={() => {
                         handleShowEditStok()
                         setUpdateDataStok(stok)
+                        setUpdateDataNamaObat(namaObat)
                         setIdUpdatedStok(id)
 
                       }}
                       className='col-md-4 my-4 mx-2' 
                       style={{ width: '18rem', borderRadius: "20px", cursor:"pointer" }}>
-                        {/* <Card.Img variant="top" src="holder.js/100px180" /> */}
                         <Card.Body>
                           <Card.Title>{namaObat}</Card.Title>
                           <div className='d-flex'>
@@ -209,8 +253,35 @@ export default function Pemasukan() {
                       </Card>
                       )}
                     {/* </div> */}
+                   
                 </div>
+                <table className="table table-borderless bg-blue text-center border border-buttom-0 my-3">
+                            <thead>
+                                <tr className='secondary-bg text-white'>
+                                <th scope="col">Nama Obat</th>
+                                <th scope="col">Stok In</th>
+                                <th scope="col">Tanggal Masuk</th>
+                                <th scope='col'>Aksi</th>
+                                </tr>
+                            </thead>
+                            {StokIn.map(({ id, stokin, tgl, nameObat }) => {
+                              const date = tgl.toDate();
+                              // Format tanggal dalam bentuk string
+                              const formattedDate = date.toLocaleDateString();
+                              return (
+                                <tbody>
+                                  <tr className='bg-white' key={id}>
+                                    <td>{nameObat}</td>
+                                    <td>{stokin}</td>
+                                    <td>{formattedDate}</td>
+                                    <button className='btn btn-danger' onClick={() => deleteData(id)}><i className="fa-solid fa-trash"></i></button>
+                                  </tr>
+                                </tbody>
+                              );
+                            })}
 
+                        </table>
+                        {/* coba */}
             </div>
 
         </div>
@@ -226,14 +297,34 @@ export default function Pemasukan() {
                 <Form onSubmit={() => {
                   updateStokInOut(idUpdatedStok)
                   handleEditCloseStok()
+                  submitStokIn()
                 }}>
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Nama Obat</Form.Label>
+                    <Form.Control 
+                    type="text" 
+                    placeholder="Enter Nama Obat" 
+                    value={updateDataNamaObat}
+                    onChange={e => {
+                      setUpdateDataNamaObat(e.target.value) 
+                      setCreateNameObat(e.target.value)
+                      }}/>
+                  </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Stok</Form.Label>
                     <Form.Control 
                     type="number" 
-                    placeholder="Enter Stok"
-                    value={updateDataStok} 
-                    onChange={e => setUpdateDataStok(e.target.value)}/>
+                    placeholder="Enter Stok" 
+                    onChange={e => { 
+                      setUpdateDataStok(e.target.value)
+                      setCreateStokIn(e.target.value)}}/>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Stok</Form.Label>
+                    <Form.Control 
+                    type="date" 
+                    placeholder="Enter Tanggal Masuk"
+                    onChange={e => setCreateTgl(e.target.value)}/>
                   </Form.Group>
                 </Form>  
               </Modal.Body>
@@ -242,6 +333,7 @@ export default function Pemasukan() {
                   Close
                 </Button>
                 <Button variant="primary" onClick={() => {
+                   submitStokIn()
                   updateStokInOut(idUpdatedStok)
                   handleEditCloseStok()
                 }}>
