@@ -32,12 +32,12 @@ export default function Pemasukan() {
     const collectionRef = collection(db,'obat')
     const [obatId, setObatId] = useState()
 
-    const [StokIn, setStokIn] = useState([])
-    const collectionRefStokIn = collection(db,'stokIn')
+    const [StokOut, setStokOut] = useState([])
+    const collectionRefStokOut = collection(db,'stokOut')
 
-    const [createStokIn, setCreateStokIn] = useState("")
-    const [createNameObat, setCreateNameObat] = useState("")
-    const [createTgl, setCreateTgl] = useState("")
+    const [createStokOut, setCreateStokOut] = useState("")
+    const [createNameObatOut, setCreateNameObatOut] = useState("")
+    const [createTglOut, setCreateTglOut] = useState("")
 
     const [updateDataStok, setUpdateDataStok] = useState()
     const [updateDataNamaObat, setUpdateDataNamaObat] = useState("")
@@ -83,10 +83,10 @@ export default function Pemasukan() {
       })
     }
 
-    const getStokIn = async ()  => {
-        await getDocs(collectionRefStokIn).then( (stokIn) =>{
-        let stokInData = stokIn.docs.map((doc) => ({...doc.data(), id: doc.id}))
-        setStokIn(stokInData)
+    const getStokOut = async ()  => {
+        await getDocs(collectionRefStokOut).then( (stokOut) =>{
+        let stokOutData = stokOut.docs.map((doc) => ({...doc.data(), id: doc.id}))
+        setStokOut(stokOutData)
       }).catch((err) => {
           console.log(err)
       })
@@ -105,7 +105,7 @@ export default function Pemasukan() {
       
       try{
         console.log("asmui",oldStok)
-        let stok = parseInt(updateDataStok) + parseInt(oldStok)
+        let stok = parseInt(oldStok) - parseInt(updateDataStok)
         await updateDoc(obatDocument, {
           namaObat: updateDataNamaObat,
           stok: stok
@@ -119,27 +119,27 @@ export default function Pemasukan() {
     const deleteData = async (id) => {
       if( window.confirm('Apakah data ini ingin di hapus?')) {
         try{
-          const documentRef = doc(db, "stokIn", id)
+          const documentRef = doc(db, "stokOut", id)
           await deleteDoc(documentRef)
         } catch (err) {
           console.log(err)
         }
-        getStokIn()
+        getStokOut()
       }
     }
 
-    const submitStokIn = async () => {;
+    const submitStokOut = async () => {;
       try{
-        await addDoc(collectionRefStokIn, {
-          nameObat: createNameObat,
-          stokin: createStokIn,
-          tgl: createTgl
+        await addDoc(collectionRefStokOut, {
+          nameObat: createNameObatOut,
+          stokOut: createStokOut,
+          tglOut: createTglOut
         })
         handleEditCloseStok()
       } catch (err) {
         console.log(err)
       }
-      getStokIn()
+      getStokOut()
       
     }
 
@@ -148,7 +148,7 @@ export default function Pemasukan() {
         setSearchObat(e.target.value);
       };
     useEffect( () => {
-      getStokIn()
+      getStokOut()
       getObats()
     }, [])
   return (
@@ -196,7 +196,7 @@ export default function Pemasukan() {
 
         <nav className='navbar navbar-expand-lg navbar-light bg-tranparent py-4 px-4'>
             <div className='d-flex align-items-center'>
-            <h2 className='fs-2 m-0 third-text'>Stok Masuk</h2>
+            <h2 className='fs-2 m-0 third-text'>Stok Obat Keluar</h2>
             </div>
 
 
@@ -280,32 +280,34 @@ export default function Pemasukan() {
                             <thead>
                                 <tr className='secondary-bg text-white'>
                                 <th scope="col">Nama Obat</th>
-                                <th scope="col">Stok In</th>
-                                <th scope="col">Tanggal Masuk</th>
+                                <th scope="col">Stok Keluar</th>
+                                <th scope="col">Tanggal Keluar</th>
                                 <th scope='col'>Aksi</th>
                                 </tr>
                             </thead>
-                            {StokIn.map(({ id, stokin, tgl, nameObat }) => {
-                             let formattedDate = tgl; // Default value if tgl is already a Date object
-  
-                             if (tgl instanceof Date) {
-                               const date = tgl;
-                               formattedDate = date.toLocaleDateString();
-                             } else if (tgl.toDate instanceof Function) {
-                               const date = tgl.toDate(); // Convert tgl to a Date object
-                               formattedDate = date.toLocaleDateString();
-                             }
-                              return (
-                                <tbody>
-                                  <tr className='bg-white' key={id}>
-                                    <td>{nameObat}</td>
-                                    <td>{stokin}</td>
-                                    <td>{formattedDate}</td>
-                                    <button className='btn btn-danger text-black' onClick={() => deleteData(id)}>Delete</button>
-                                  </tr>
-                                </tbody>
-                              );
+                            {StokOut.map(({ id, stokOut, tglOut, nameObat }) => {
+                                let formattedDate = tglOut; // Default value if tglOut is already a Date object
+
+                                if (tglOut instanceof Date) {
+                                    const date = tglOut;
+                                    formattedDate = date.toLocaleDateString();
+                                } else if (tglOut && typeof tglOut.toDate === 'function') {
+                                    const date = tglOut.toDate(); // Convert tglOut to a Date object
+                                    formattedDate = date.toLocaleDateString();
+                                }
+
+                                return (
+                                    <tbody>
+                                    <tr className='bg-white' key={id}>
+                                        <td>{nameObat}</td>
+                                        <td>{stokOut}</td>
+                                        <td>{formattedDate}</td>
+                                        <button className='btn btn-danger text-black' onClick={() => deleteData(id)}>Delete</button>
+                                    </tr>
+                                    </tbody>
+                                );
                             })}
+
 
                         </table>
                         {/* coba */}
@@ -318,13 +320,13 @@ export default function Pemasukan() {
         {/* Edit Stok Modal */}
         <Modal show={showEditStok} onHide={handleEditCloseStok}>
               <Modal.Header closeButton>
-                <Modal.Title>Tambah Stok Masuk</Modal.Title>
+                <Modal.Title>Tambah Stok Keluar</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form onSubmit={() => {
                   updateStokInOut(idUpdatedStok)
                   handleEditCloseStok()
-                  submitStokIn()
+                  submitStokOut()
                 }}>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Nama Obat</Form.Label>
@@ -333,24 +335,24 @@ export default function Pemasukan() {
                     placeholder="Enter Nama Obat" 
                     onChange={e => {
                       setUpdateDataNamaObat(e.target.value) 
-                      setCreateNameObat(e.target.value)
+                      setCreateNameObatOut(e.target.value)
                       }}/>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Jumlah Stok Masuk</Form.Label>
+                    <Form.Label>Jumlah Stok Keluar</Form.Label>
                     <Form.Control 
                     type="number" 
                     placeholder="Enter Stok" 
                     onChange={e => { 
                       setUpdateDataStok(e.target.value)
-                      setCreateStokIn(e.target.value)}}/>
+                      setCreateStokOut(e.target.value)}}/>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Tanggal Stok Masuk</Form.Label>
+                    <Form.Label>Tanggal Stok Keluar</Form.Label>
                     <Form.Control 
                     type="date" 
-                    placeholder="Enter Tanggal Masuk"
-                    onChange={e => setCreateTgl(e.target.value)}/>
+                    placeholder="Enter Tanggal Keluar"
+                    onChange={e => setCreateTglOut(e.target.value)}/>
                   </Form.Group>
                 </Form>  
               </Modal.Body>
@@ -359,7 +361,7 @@ export default function Pemasukan() {
                   Close
                 </Button>
                 <Button variant="primary" onClick={() => {
-                   submitStokIn()
+                   submitStokOut()
                   updateStokInOut(idUpdatedStok)
                   handleEditCloseStok()
                 }}>

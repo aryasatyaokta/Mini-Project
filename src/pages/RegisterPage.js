@@ -48,7 +48,7 @@ export default function RegisterPage() {
               // Profile updated!
               // ...
               setErr("");
-              naviget("/login")
+              naviget("/")
             })
             // ...
           })

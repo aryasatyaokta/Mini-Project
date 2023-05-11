@@ -124,7 +124,8 @@ export default function Obat() {
         await updateDoc(obatDocument, {
           kodeObat: updateKodeObat,
           namaObat: updateNamaObat,
-          sediaan: updateSediaan
+          sediaan: updateSediaan,
+          stok: updateStok
         })
       }catch (err) {
         console.log(err)
@@ -153,13 +154,23 @@ export default function Obat() {
             </a>
           </Link>
           <Link to="/obat" className='text-decoration-none border-none'>
-            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
+            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-3 border-0'>
                 <i className='fa-solid fa-notes-medical me-2'></i>Obat
             </a>
           </Link>
           <Link to="/obat-masuk" className='text-decoration-none border-none'>
             <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
-                <i className='fas fa-chart-line me-2'></i>Stok
+                <i className='fas fa-chart-line me-2'></i>Stok In
+            </a>
+          </Link>
+          <Link to="/obat-keluar" className='text-decoration-none border-none'>
+            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
+                <i className='fas fa-chart-line me-2'></i>Stok Out
+            </a>
+          </Link>
+          <Link to="/analytics" className='text-decoration-none border-none'>
+            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
+                <i className='fas fa-chart-line me-2'></i>Analytics
             </a>
           </Link>
           <a onClick={handleLogout} href='#' className='list-group-item list-group-item-action bg-transparent text-danger py-5'>
@@ -352,6 +363,7 @@ export default function Obat() {
                     value={updateSediaan} 
                     onChange={e => setUpdateSediaan(e.target.value)}/>
                   </Form.Group>
+                  
                 </Form>  
               </Modal.Body>
               <Modal.Footer>

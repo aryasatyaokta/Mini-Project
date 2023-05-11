@@ -31,13 +31,16 @@ export default function Dashboard() {
     
   }
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log(auth.currentUser)
-    } else {
-      naviget("/")
-    }
-  });
+ 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(auth.currentUser);
+      } else {
+        naviget('/');
+      }
+    });
+  }, [auth, naviget]);
 
   const warningTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -62,10 +65,12 @@ export default function Dashboard() {
   }
 
   useEffect( () => {
-    
     getObats()
-    console.log(obats)
   }, [])
+
+  // useEffect(() => {
+  //   naviget('/');
+  // }, [naviget]);
   
   return (
   <>
@@ -83,13 +88,23 @@ export default function Dashboard() {
             </a>
           </Link>
           <Link to="/obat" className='text-decoration-none border-none'>
-            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
+            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-3 border-0'>
                 <i className='fa-solid fa-notes-medical me-2'></i>Obat
             </a>
           </Link>
           <Link to="/obat-masuk" className='text-decoration-none border-none'>
             <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
-                <i className='fas fa-chart-line me-2'></i>Stok
+                <i className='fas fa-chart-line me-2'></i>Stok In
+            </a>
+          </Link>
+          <Link to="/obat-keluar" className='text-decoration-none border-none'>
+            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
+                <i className='fas fa-chart-line me-2'></i>Stok Out
+            </a>
+          </Link>
+          <Link to="/analytics" className='text-decoration-none border-none'>
+            <a href='#' className='list-group-item list-group-item-action bg-transparent second-text py-4 border-0'>
+                <i className='fas fa-chart-line me-2'></i>Analytics
             </a>
           </Link>
           <a onClick={handleLogout} href='#' className='list-group-item list-group-item-action bg-transparent text-danger py-5'>

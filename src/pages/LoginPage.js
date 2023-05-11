@@ -31,7 +31,7 @@ export default function LoginPage() {
       .then((userCredential) => {
         // Signed in
         setErr("")
-        naviget("/","/obat","/pengeluaran")
+        naviget("/","/obat","/obat-masuk", "/obat-keluar", "/analytics")
         // ...
       })
       .catch((error) => {
@@ -51,7 +51,7 @@ export default function LoginPage() {
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      naviget("/","/obat","/pengeluaran")
+      naviget("/","/obat","/obat-masuk", "/obat-keluar", "/analytics")
     }
   });
 
