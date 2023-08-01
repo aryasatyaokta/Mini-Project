@@ -7,12 +7,12 @@ import {getFirestore} from 'firebase/firestore'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCh2pK4FWm1yqsyYSaF_fwSdt6lgFRCfFs",
-  authDomain: "miniproject-e9c5f.firebaseapp.com",
-  projectId: "miniproject-e9c5f",
-  storageBucket: "miniproject-e9c5f.appspot.com",
-  messagingSenderId: "160344795689",
-  appId: "1:160344795689:web:ee727492ecbcd355944a38"
+  apiKey: "AIzaSyDz_5wPnpq1Vff__5i1RMpVUl4iGSy5Z6k",
+  authDomain: "mini-6406b.firebaseapp.com",
+  projectId: "mini-6406b",
+  storageBucket: "mini-6406b.appspot.com",
+  messagingSenderId: "556011332252",
+  appId: "1:556011332252:web:a1a725b5a83280cc714359"
 };
 
 // Initialize Firebase
